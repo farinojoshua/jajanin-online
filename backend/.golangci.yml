@@ -1,0 +1,43 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - gocritic
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    enable-all: true
+  
+  goimports:
+    local-prefixes: github.com/jajanin/backend
+
+  misspell:
+    locale: US
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 50
+  max-same-issues: 10
+  
+  exclude-rules:
+    # Exclude test files from some linters
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gocritic

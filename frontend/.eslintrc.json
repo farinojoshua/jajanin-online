@@ -1,0 +1,64 @@
+{
+    "extends": [
+        "next/core-web-vitals"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "rules": {
+        "no-unused-vars": "off",
+        "no-console": [
+            "warn",
+            {
+                "allow": [
+                    "warn",
+                    "error"
+                ]
+            }
+        ],
+        "prefer-const": "error",
+        "no-var": "error",
+        "eqeqeq": [
+            "error",
+            "always"
+        ],
+        "curly": "off",
+        "no-multiple-empty-lines": [
+            "warn",
+            {
+                "max": 2
+            }
+        ],
+        "no-trailing-spaces": "warn",
+        "semi": [
+            "error",
+            "always"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "avoidEscape": true
+            }
+        ],
+        "jsx-quotes": [
+            "error",
+            "prefer-double"
+        ],
+        "react/jsx-no-duplicate-props": "error",
+        "react/jsx-key": "error",
+        "react/no-unescaped-entities": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    }
+}

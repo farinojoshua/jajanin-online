@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light Mode (default) */
+:root {
+  --primary-400: #FF8A70;
+  --primary-500: #FE6244;
+  --primary-600: #E54D2E;
+  --primary-700: #C73E22;
+
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #F1F3F5;
+  --bg-card: rgba(255, 255, 255, 0.9);
+
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode */
+.dark {
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #111118;
+  --bg-tertiary: #1F1F28;
+  --bg-card: rgba(31, 31, 40, 0.8);
+
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(254, 98, 68, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Glassmorphism */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Gradient Background */
+.gradient-bg {
+  background: linear-gradient(135deg, var(--primary-600) 0%, #DC2626 100%);
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200;
+  background: linear-gradient(135deg, var(--primary-600) 0%, #DC2626 100%);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(254, 98, 68, 0.3);
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
+  background: rgba(254, 98, 68, 0.1);
+  color: var(--primary-400);
+  border: 1px solid rgba(254, 98, 68, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(254, 98, 68, 0.2);
+}
+
+/* Card Styles */
+.card {
+  @apply rounded-xl p-6;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Input Styles */
+.input {
+  @apply w-full py-3 rounded-lg transition-all duration-200;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Input with icon on the left */
+.input-icon {
+  padding-left: 3rem !important;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.input::placeholder {
+  color: #6B7280;
+}
+
+/* Amount Button */
+.amount-btn {
+  @apply px-5 py-3 rounded-lg font-medium transition-all duration-200;
+  background: rgba(254, 98, 68, 0.1);
+  border: 1px solid rgba(254, 98, 68, 0.3);
+  color: var(--primary-400);
+}
+
+.amount-btn:hover {
+  background: rgba(254, 98, 68, 0.2);
+}
+
+.amount-btn.active {
+  background: linear-gradient(135deg, var(--primary-600) 0%, #DC2626 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+  }
+}
+
+.animate-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
