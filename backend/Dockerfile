@@ -5,6 +5,10 @@ WORKDIR /app
 
 # Copy go mod files
 COPY go.mod go.sum ./
+
+# Set Go proxy with fallback
+ENV GOPROXY=https://proxy.golang.org,direct
+
 RUN go mod download
 
 # Copy source code
