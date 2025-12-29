@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, Mail, Lock, User, ArrowRight } from 'lucide-react';
-import { useGoogleLogin } from '@react-oauth/google';
 import { authApi } from '@/lib/api';
 import { setToken, isAuthenticated } from '@/lib/auth';
 
@@ -30,30 +29,53 @@ const GoogleIcon = () => (
     </svg>
 );
 
-export default function RegisterPage() {
-    const router = useRouter();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+// Client-only Google Login Button component
+function GoogleLoginButton({ onSuccess, onError }: { onSuccess: (token: string) => void; onError: (error: string) => void }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-    const [error, setError] = useState('');
+    const [GoogleOAuthProvider, setGoogleOAuthProvider] = useState<any>(null);
+    const [useGoogleLogin, setUseGoogleLogin] = useState<any>(null);
 
-    // Google Login hook - MUST be called before any conditional returns
+    useEffect(() => {
+        // Dynamically import Google OAuth only on client side
+        import('@react-oauth/google').then((module) => {
+            setGoogleOAuthProvider(() => module.GoogleOAuthProvider);
+            setUseGoogleLogin(() => module.useGoogleLogin);
+        });
+    }, []);
+
+    if (!GoogleOAuthProvider || !useGoogleLogin) {
+        return (
+            <button
+                disabled
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-xl font-medium text-gray-700 dark:text-gray-200 opacity-50"
+            >
+                <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
+                <span>Memuat...</span>
+            </button>
+        );
+    }
+
+    return (
+        <GoogleLoginButtonInner 
+            useGoogleLogin={useGoogleLogin} 
+            isLoading={isLoading} 
+            setIsLoading={setIsLoading}
+            onSuccess={onSuccess}
+            onError={onError}
+        />
+    );
+}
+
+function GoogleLoginButtonInner({ useGoogleLogin, isLoading, setIsLoading, onSuccess, onError }: any) {
     const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            setIsGoogleLoading(true);
-            setError('');
-
+        onSuccess: async (tokenResponse: any) => {
+            setIsLoading(true);
             try {
-                // Get user info from Google
                 const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                     headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
                 });
                 const userInfo = await userInfoResponse.json();
 
-                // Send to backend
                 const response = await authApi.googleAuth({
                     google_id: userInfo.sub,
                     email: userInfo.email,
@@ -62,27 +84,63 @@ export default function RegisterPage() {
                 });
 
                 const { token } = response.data.data;
-                setToken(token);
-                router.push('/dashboard');
+                onSuccess(token);
             } catch (err: any) {
-                setError(err.response?.data?.error || 'Gagal daftar dengan Google');
+                onError(err.response?.data?.error || 'Gagal daftar dengan Google');
             } finally {
-                setIsGoogleLoading(false);
+                setIsLoading(false);
             }
         },
         onError: () => {
-            setError('Daftar dengan Google gagal. Silakan coba lagi.');
+            onError('Daftar dengan Google gagal. Silakan coba lagi.');
         },
     });
 
-    // Redirect if already logged in
+    return (
+        <button
+            onClick={() => googleLogin()}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 hover:border-gray-300 dark:hover:border-dark-500 transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+            {isLoading ? (
+                <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
+            ) : (
+                <>
+                    <GoogleIcon />
+                    <span>Daftar dengan Google</span>
+                </>
+            )}
+        </button>
+    );
+}
+
+export default function RegisterPage() {
+    const router = useRouter();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const [error, setError] = useState('');
+    const [isMounted, setIsMounted] = useState(false);
+
     useEffect(() => {
+        setIsMounted(true);
         if (isAuthenticated()) {
             router.push('/dashboard');
         } else {
             setIsCheckingAuth(false);
         }
     }, [router]);
+
+    const handleGoogleSuccess = (token: string) => {
+        setToken(token);
+        router.push('/dashboard');
+    };
+
+    const handleGoogleError = (errorMsg: string) => {
+        setError(errorMsg);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,8 +159,7 @@ export default function RegisterPage() {
         }
     };
 
-    // Show loading while checking auth
-    if (isCheckingAuth) {
+    if (isCheckingAuth || !isMounted) {
         return (
             <main className="min-h-screen flex items-center justify-center">
                 <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
@@ -131,20 +188,9 @@ export default function RegisterPage() {
                     </p>
 
                     {/* Google Register Button */}
-                    <button
-                        onClick={() => googleLogin()}
-                        disabled={isGoogleLoading}
-                        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 hover:border-gray-300 dark:hover:border-dark-500 transition-all duration-200 shadow-sm hover:shadow-md mb-6"
-                    >
-                        {isGoogleLoading ? (
-                            <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            <>
-                                <GoogleIcon />
-                                <span>Daftar dengan Google</span>
-                            </>
-                        )}
-                    </button>
+                    <div className="mb-6">
+                        <GoogleLoginButton onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+                    </div>
 
                     {/* Divider */}
                     <div className="relative mb-6">
