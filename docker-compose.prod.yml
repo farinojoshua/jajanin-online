@@ -38,11 +38,11 @@ services:
       - DB_SSLMODE=disable
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRY_HOURS=72
-      - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY}
-      - MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY}
-      - MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}
-      - FRONTEND_URL=${FRONTEND_URL:-https://yourdomain.com}
-      - APP_URL=${APP_URL:-https://api.yourdomain.com}
+      - PAYLABS_MERCHANT_ID=${PAYLABS_MERCHANT_ID}
+      - PAYLABS_PRIVATE_KEY=${PAYLABS_PRIVATE_KEY}
+      - PAYLABS_API_URL=${PAYLABS_API_URL:-https://api.paylabs.co.id}
+      - FRONTEND_URL=${FRONTEND_URL:-https://jajanin.online}
+      - APP_URL=${APP_URL:-https://jajanin.online}
     depends_on:
       db:
         condition: service_healthy
@@ -55,11 +55,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.yourdomain.com}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://jajanin.online}
     container_name: jajanin-frontend
     restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.yourdomain.com}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://jajanin.online}
     depends_on:
       - backend
     networks:
